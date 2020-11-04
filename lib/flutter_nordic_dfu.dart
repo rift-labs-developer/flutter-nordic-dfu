@@ -176,6 +176,9 @@ class FlutterNordicDfu {
           iosSpecialParameter?.alternativeAdvertisingNameEnabled,
     });
   }
+  static Future<String> abortDfu() async {
+    await _channel.invokeMethod('abortDfu');
+  }
 }
 
 abstract class DfuProgressListenerAdapter {
