@@ -9,7 +9,8 @@ public class SwiftFlutterNordicDfuPlugin: NSObject, FlutterPlugin, DFUServiceDel
     let channel: FlutterMethodChannel
     var pendingResult: FlutterResult?
     var deviceAddress: String?
-    
+    private var dfuController    : DFUServiceController!
+
     init(_ registrar: FlutterPluginRegistrar, _ channel: FlutterMethodChannel) {
         self.registrar = registrar
         self.channel = channel
@@ -60,6 +61,10 @@ public class SwiftFlutterNordicDfuPlugin: NSObject, FlutterPlugin, DFUServiceDel
                      alternativeAdvertisingNameEnabled: alternativeAdvertisingNameEnabled,
                      result: result)
         }
+         else if (call.method == "abortDfu") {
+            _ = dfuController?.abort()
+            dfuController = nil
+         }
     }
     
     private func startDfu(
@@ -102,7 +107,7 @@ public class SwiftFlutterNordicDfuPlugin: NSObject, FlutterPlugin, DFUServiceDel
         pendingResult = result
         deviceAddress = address
         
-        _ = dfuInitiator.start(targetWithIdentifier: uuid)
+       dfuController = dfuInitiator.start(targetWithIdentifier: uuid)
         print("dfuInitiator have start")
     }
     
@@ -113,6 +118,7 @@ public class SwiftFlutterNordicDfuPlugin: NSObject, FlutterPlugin, DFUServiceDel
             pendingResult?(deviceAddress)
             pendingResult = nil
             print("\(deviceAddress!) onDfuCompleted")
+            dfuController = nil
             channel.invokeMethod("onDfuCompleted", arguments: deviceAddress)
         case .disconnecting:
             print("\(deviceAddress!) onDeviceDisconnecting")

@@ -102,7 +102,13 @@ public class FlutterNordicDfuPlugin implements MethodCallHandler {
 
             pendingResult = result;
             startDfu(address, name, filePath, forceDfu, enableUnsafeExperimentalButtonlessServiceInSecureDfu, disableNotification, keepBond, packetReceiptNotificationsEnabled, restoreBond, startAsForegroundService, result,numberOfPackets,enablePRNs);
-        } else {
+        }
+        else if (call.method.equals("abortDfu")) {
+            if (controller != null) {
+                controller.abort();
+            }
+        }
+        else {
             result.notImplemented();
         }
     }
